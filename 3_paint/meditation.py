@@ -36,7 +36,6 @@ if __name__ == "__main__":
     shamisen = spray(score, pitch=74, duration=1, rhythm=[
                      0.25, 0.5, 0.25, 0.125], band=scale1, end=SECTION_1_LENGTH + SECTION_2_LENGTH - shamisen_start, instrument=2)
 
-
     # Harp
     harp_start = SECTION_1_LENGTH
     harp = spray(score, pitch=74, duration=2, rhythm=[
@@ -45,16 +44,19 @@ if __name__ == "__main__":
     # Shakuhachi
     shakuhachi_start = SECTION_1_LENGTH + MEASURE_LENGTH * 4
     shakuhachi = spray(score, pitch=74, duration=4, rhythm=[
-                       1, 2], band=scale1, end=SECTION_2_LENGTH, instrument=4)
+                       1, 2], band=scale1, end=SECTION_2_LENGTH - MEASURE_LENGTH * 4, instrument=4)
 
     score.compose([
+        # Section 1
         [lower_koto_start, lower_koto],
         [taiko_start, taiko],
         [higher_koto_start, higher_koto],
         [shamisen_start, shamisen],
+
+        # Section 2
         [harp_start, harp],
-        [shakuhachi_start, shakuhachi]
+        [shakuhachi_start, shakuhachi],
     ])
 
-    file = MidiFile('paint.mid', [track0, track1]).write()
+    file = MidiFile('meditation.mid', [track0, track1]).write()
     print(f'Wrote "{file.pathname}"')

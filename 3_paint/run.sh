@@ -1,1 +1,1 @@
-python paint.py && fluidsynth ../../soundfonts/MuseScore_General.sf3 paint.mid
+python meditation.py && fluidsynth ../../soundfonts/MuseScore_General.sf3 meditation.mid
