@@ -1,8 +1,10 @@
-from random import shuffle
+import math
+from random import randint, random, randrange, shuffle
 from musx import Score, Seq, MidiFile, Note
 from musx.interval import Interval
 from musx.midi.gm import AcousticGrandPiano, Banjo, Cabasa, Claves, HandClap, Kalimba, Marimba, Vibraphone, Xylophone
 from musx.pitch import Pitch, scale
+from musx.tools import rand
 
 
 def clapper(trope, repeat: int, wraparound: bool = False):
@@ -36,9 +38,9 @@ def get_shuffled_maj_pent(root_keynum: int, num_notes: int = 16):
     return notes
 
 
-def get_claps_composer(score: Score, root_keynum: int, repeats: int, rhy: float, dur: float, lower_instr_chan: int):
+def get_claps_composer(score: Score, root_keynum: int, repeats: int, rhy: float, dur: float, lower_instr_chan: int, num_notes: int = 8):
     claps = [x for x in clapper(
-        get_shuffled_maj_pent(root_keynum, 8), repeats, True)]
+        get_shuffled_maj_pent(root_keynum, num_notes), repeats, True)]
     return play_claps(score, claps, rhy, dur, 1.0, lower_instr_chan)
 
 
@@ -55,15 +57,18 @@ if __name__ == '__main__':
         })
     score = Score(out=seq)
 
-    high = Pitch('f#4')
+    high = [Pitch('d#2'), Pitch('c#4'), Pitch('f#5')][randint(0, 2)]
     mid = Interval('-P8').transpose(high)
     low = Interval('-P8').transpose(mid)
-    rhy = 0.2
+    rhy = 0.1 + (random() * 0.3)
     dur = 0.1
+    num_notes = randint(3, 16)
+    num_repeats = 4
+    print(high, rhy, dur, num_notes)
     score.compose([
-        get_claps_composer(score, high.keynum(), 4, rhy, dur, 1),
-        get_claps_composer(score, mid.keynum(), 2, rhy * 2, dur * 2, 3),
-        get_claps_composer(score, low.keynum(), 1, rhy * 4, dur * 4, 3)
+        [0, get_claps_composer(score, high.keynum(), num_repeats, rhy, dur, 1, num_notes)],
+        [0, get_claps_composer(score, mid.keynum(), math.floor(num_repeats / 2), rhy * 2, dur * 2, 3, num_notes)],
+        [0, get_claps_composer(score, low.keynum(), math.floor(num_repeats / 4), rhy * 4, dur * 4, 3, num_notes)],
     ])
 
     filename = 'claps.mid'
