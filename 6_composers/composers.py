@@ -66,7 +66,7 @@ def dnb_drums(score: Score, tempo: int, ampl: float, snare_sound: int = SNARE):
     # eighth notes
     # b=bass, s=snare, .=rest, ?=bass or rest
     # . . s . . . s . | . . s . . . s .
-    # b . . . . b . . | ? ? ? ? ? ? ? ?
+    # b . . . . b . . | ? ? . ? ? ? . ?
     kick_snare_pattern = [
         BASS_DRUM, REST, snare_sound, REST,
         REST, BASS_DRUM, snare_sound, REST,
