@@ -1,31 +1,44 @@
 import musx
 from musx.gens import choose, cycle
-from musx.midi.gm import AcousticBass, AcousticGrandPiano, AcousticSnare, BassDrum1, ClosedHiHat, ElectricSnare, OpenHiHat
+from musx.interval import Interval
+from musx.midi.gm import AcousticBass, AcousticGrandPiano, AcousticSnare, BassDrum1, ClosedHiHat, Cowbell, ElectricBass_finger, ElectricPiano1, ElectricPiano2, ElectricSnare, OpenHiHat, RideCymbal1, RideCymbal2, SideStick
 from musx.midi.midifile import MidiFile
 from musx.note import Note
+from musx.pitch import Pitch
+from musx.ran import between, pick
 from musx.rhythm import intempo
 from musx.score import Score
 from musx.seq import Seq
 
 CLOSED_HI_HAT = ClosedHiHat + 1
 OPEN_HI_HAT = OpenHiHat + 1
+RIDE1 = RideCymbal1 + 1
+RIDE2 = RideCymbal2 + 1
+COWBELL = Cowbell + 1
 SNARE = ElectricSnare + 1
+ACOUSTIC_SNARE = AcousticSnare + 1
+SIDE_STICK = SideStick + 1
 BASS_DRUM = BassDrum1 + 1
 BASS_OR_REST = 'bass or snare'
 SNARE_OR_REST = 'snare or rest'
 REST = 'r'
 
 
-def dnb_hi_hat(score: Score, tempo: int, ampl: float):
+def dnb_hi_hat(score: Score, tempo: int, ampl: float, sound: int = CLOSED_HI_HAT):
+    '''
+    Generates hi-hats on eighth notes with alternating accents.
+    Can substitute closed hi-hat for other sounds.
+    '''
     rhy = intempo(0.5, tempo)
     dur = intempo(0.5, tempo)
     acc_amp = 0.8
     non_acc_amp = 0.2
 
+    # >   >     >   >     >   >     > > >
     # + + + + | + + + + | + + + + | + o + +
-    hi_hat_bar = [CLOSED_HI_HAT] * 4
+    hi_hat_bar = [sound] * 4
     hi_hat_pattern = hi_hat_bar*3 + \
-        [CLOSED_HI_HAT] + [OPEN_HI_HAT] + [CLOSED_HI_HAT]*2
+        [sound] + [OPEN_HI_HAT] + [sound]*2
 
     pat = cycle(hi_hat_pattern)
     for i in range(len(hi_hat_pattern)):
@@ -40,22 +53,25 @@ def dnb_hi_hat(score: Score, tempo: int, ampl: float):
         yield rhy
 
 
-def dnb_drums(score: Score, tempo: int, ampl: float):
+def dnb_drums(score: Score, tempo: int, ampl: float, snare_sound: int = SNARE):
+    '''
+    Generates random kick & snare patterns.
+    '''
     rhy = intempo(0.5, tempo)
     dur = intempo(0.2, tempo)
     amp = 0.95
 
     bass_or_rest = choose(items=[BASS_DRUM, REST], weights=[0.25, 0.75])
-    
+
     # eighth notes
     # b=bass, s=snare, .=rest, ?=bass or rest
-    # . . s . . . s . | . . s . . . s . 
+    # . . s . . . s . | . . s . . . s .
     # b . . . . b . . | ? ? ? ? ? ? ? ?
     kick_snare_pattern = [
-        BASS_DRUM, REST, SNARE, REST,
-        REST, BASS_DRUM, SNARE, REST,
-        BASS_OR_REST, BASS_OR_REST, SNARE, BASS_OR_REST,
-        BASS_OR_REST, BASS_OR_REST, SNARE, BASS_OR_REST,
+        BASS_DRUM, REST, snare_sound, REST,
+        REST, BASS_DRUM, snare_sound, REST,
+        BASS_OR_REST, BASS_OR_REST, snare_sound, BASS_OR_REST,
+        BASS_OR_REST, BASS_OR_REST, snare_sound, BASS_OR_REST,
     ]
     pat = cycle(kick_snare_pattern)
     for _ in range(len(kick_snare_pattern)):
@@ -74,6 +90,9 @@ def dnb_drums(score: Score, tempo: int, ampl: float):
 
 
 def dnb_ghost_notes(score: Score, tempo: int, ampl: float):
+    '''
+    Generates random ghost notes at 16th note subdivisions.
+    '''
     rhy = intempo(0.25, tempo)
     dur = intempo(0.1, tempo)
     amps = cycle([.6, .5, .7, .5, 1, .6, .5, .7, .5, 0.8])
@@ -81,7 +100,7 @@ def dnb_ghost_notes(score: Score, tempo: int, ampl: float):
     snare_or_rest = choose(items=[SNARE, REST], weights=[0.25, 0.75])
 
     # 16th notes
-    # g=ghost, .=rest, ?=ghost or rest
+    # g=ghost or rest .=rest
     # |: . . . . | . g . g | . g . g | . g . g :|
     rest_pat = [REST] * 4
     ghost_note_pat = [REST, SNARE_OR_REST,
@@ -105,20 +124,97 @@ def dnb_ghost_notes(score: Score, tempo: int, ampl: float):
         yield rhy
 
 
+def create_rand_chord(low: int, high: int) -> list[int]:
+    # Highest possible root keynum
+    high_bound = high - Interval('P5').semitones()
+    rand_keynum = between(low, high_bound)
+    rand_pitch = Pitch.from_keynum(rand_keynum)
+
+    # Combine root with notes transposed up m3 and P5
+    chord = [rand_keynum] + [i.transpose(rand_pitch).keynum(
+    ) for i in [Interval('m3'), Interval('P5'), Interval('m7')]]
+
+    return chord
+
+
+def dnb_chords(score: Score, tempo: int, low: int, high: int, num_chords: int = 3, amp: float = 0.6, chords: int = ElectricPiano1):
+    '''
+    Adds a variable number of electric piano and bass chords in measure
+    '''
+
+    # Generate random chords
+    chords = [create_rand_chord(low, high) for _ in range(num_chords)]
+
+    # Find start times for each
+    num_subdivisions = 16
+    all_times = [i for i in range(num_subdivisions)]
+    chosen_times = []
+    for _ in range(num_chords):
+        rand_index = between(0, len(all_times))
+        rand_time = all_times[rand_index]
+        all_times = all_times[:rand_index] + all_times[rand_index+1:]
+        chosen_times.append(rand_time)
+
+    chosen_times.sort()
+    chosen_times.append(16)
+
+    for i, chord in enumerate(chords):
+        time = (chosen_times[i+1] - chosen_times[i]) / 2
+        rhy = intempo(time, tempo)
+        dur = intempo(time, tempo)
+
+        # Add bass
+        bass = Note(time=score.now, duration=dur, pitch=chord[0] - 12,
+                    amplitude=amp, instrument=1)
+        score.add(bass)
+
+        # Add electric piano
+        for keynum in chord:
+            m = Note(time=score.now, duration=dur, pitch=keynum,
+                     amplitude=amp, instrument=0)
+            score.add(m)
+        yield rhy
+
+
+def dnb_track(score: Score, measures: int, tempo: int):
+    '''
+    Sequencer generator to generate measures from dnb tracks.
+    Randomly chooses amplitude, drums, and other parameters every few measures.
+    '''
+    amp = 1.0
+    hat_sound = CLOSED_HI_HAT
+    snare_sound = SNARE
+    snare_sounds = choose(
+        items=[SNARE, ACOUSTIC_SNARE, SIDE_STICK], weights=[0.4, 0.4, 0.2])
+    num_chords = 3
+    chords = ElectricPiano1
+    for measure in range(measures):
+        # Change parameters after a few measures
+        if measure > 0 and measure % 4 == 0:
+            hat_sound = pick(CLOSED_HI_HAT, OPEN_HI_HAT, RIDE1, RIDE2, COWBELL)
+            snare_sound = next(snare_sounds)
+            num_chords = pick(2, 3, 4)
+            chords = pick(ElectricPiano1, ElectricPiano2)
+            amp = between(0.8, 1)
+
+        if measure == measures - 1:
+            amp = 1.0
+
+        # Add to score
+        score.compose(dnb_hi_hat(score, tempo, amp, hat_sound))
+        score.compose(dnb_drums(score, tempo, amp, snare_sound))
+        score.compose(dnb_ghost_notes(score, tempo, amp))
+        score.compose(dnb_chords(score, tempo, 48, 64,
+                      num_chords, amp - 0.2, chords))
+        yield intempo(8, tempo)
+
+
 if __name__ == '__main__':
-    tempo = 180
-    track0 = MidiFile.metatrack(ins={0: AcousticGrandPiano, 1: AcousticBass})
+    tempo = 170
+    track0 = MidiFile.metatrack(
+        ins={0: ElectricPiano1, 1: ElectricBass_finger, 2: ElectricPiano2})
 
     score = Score(out=Seq())
 
-    play = []
-
-    time_constant = 1.3325
-    for x in range(0, 15, 2):
-        section_start = x * time_constant
-        play.extend([[section_start, dnb_hi_hat(score, tempo, 1)],
-                    [section_start, dnb_drums(score, tempo, 1)],
-                    [section_start, dnb_ghost_notes(score, tempo, 1)]])
-
-    score.compose(play)
-    file = MidiFile("dnb_hihat.mid", [track0, score.out]).write()
+    score.compose(dnb_track(score, 16, tempo))
+    file = MidiFile("dnb.mid", [track0, score.out]).write()
