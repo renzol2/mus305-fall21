@@ -5,7 +5,7 @@ from musx.midi.gm import AcousticBass, AcousticGrandPiano, AcousticSnare, BassDr
 from musx.midi.midifile import MidiFile
 from musx.note import Note
 from musx.pitch import Pitch
-from musx.ran import between, pick
+from musx.ran import between, odds, pick
 from musx.rhythm import intempo
 from musx.score import Score
 from musx.seq import Seq
@@ -188,6 +188,7 @@ def dnb_track(score: Score, measures: int, tempo: int):
         items=[SNARE, ACOUSTIC_SNARE, SIDE_STICK], weights=[0.4, 0.4, 0.2])
     num_chords = 3
     chords = ElectricPiano1
+    play_chords = True
     for measure in range(measures):
         # Change parameters after a few measures
         if measure > 0 and measure % 4 == 0:
@@ -196,6 +197,7 @@ def dnb_track(score: Score, measures: int, tempo: int):
             num_chords = pick(2, 3, 4)
             chords = pick(ElectricPiano1, ElectricPiano2)
             amp = between(0.8, 1)
+            play_chords = odds(0.8)
 
         if measure == measures - 1:
             amp = 1.0
@@ -204,7 +206,8 @@ def dnb_track(score: Score, measures: int, tempo: int):
         score.compose(dnb_hi_hat(score, tempo, amp, hat_sound))
         score.compose(dnb_drums(score, tempo, amp, snare_sound))
         score.compose(dnb_ghost_notes(score, tempo, amp))
-        score.compose(dnb_chords(score, tempo, 48, 64,
+        if play_chords:
+            score.compose(dnb_chords(score, tempo, 48, 64,
                       num_chords, amp - 0.2, chords))
         yield intempo(8, tempo)
 

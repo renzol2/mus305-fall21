@@ -1,0 +1,1 @@
+python composers.py && fluidsynth ../../soundfonts/MuseScore_General.sf3 dnb.mid
