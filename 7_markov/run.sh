@@ -1,0 +1,1 @@
+python mathrock.py && fluidsynth ../../soundfonts/MuseScore_General.sf3 mathrock.mid

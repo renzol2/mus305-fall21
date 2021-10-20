@@ -19,7 +19,7 @@ SNARE = ElectricSnare + 1
 ACOUSTIC_SNARE = AcousticSnare + 1
 SIDE_STICK = SideStick + 1
 BASS_DRUM = BassDrum1 + 1
-BASS_OR_REST = 'bass or snare'
+BASS_OR_REST = 'bass or rest'
 SNARE_OR_REST = 'snare or rest'
 REST = 'r'
 
