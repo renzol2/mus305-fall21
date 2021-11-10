@@ -24,36 +24,6 @@ KICK_OR_REST = 'kick or rest'
 SNARE_OR_REST = 'snare or rest'
 REST = 'r'
 
-'''
-
-Markov for main guitar riff
-- transcribe riff from some song
-- use markov_analyze
-
-Markov for chords
-- just uhh choose chords from the same song as riff
-- get chord progression, use markov_analyze
-
-Markov for drums?
-- 
-
-Markov to change time signatures of each measure
-- Possible measure values
-  - 3/4
-  - 4/4
-  - 5/4
-  - 5/8
-  - 7/8
-- maybe pick 4 measure values and loop through them 4x for a total of 16
-
-Markov for sections?
-- just riff
-- drums + riff
-- riff + bass
-- drums + riff + bass
-
-'''
-
 CHINCHILLA_KEYS = [
     'B3', 'C4', 'A3', 'F4', 'G4', 'E4', 'C4', 'C4', 'C5', 'A4', 'G4', 'A4', 'E4', 'C4', 'E4', 'C4', 'G4', 'E4', 'C4', 'D4', 'E4', 'C4', 'G4'
 ]
@@ -86,14 +56,15 @@ NEVER_MEANT_KEYNUMS = [
 NEVER_MEANT_RHYS = [r for _, r in never_meant]
 
 
-def generate_riff(score: Score, note_rules: dict, rhythm_rules: dict, tempo: int, reps: int, dur: float):
-    note_pat = musx.markov(note_rules)
-    rhythm_pat = musx.markov(rhythm_rules)
-    for _ in range(reps):
-        next_note = next(note_pat)
-        if next_note:
-            score.add(musx.Note(time=score.now, pitch=next_note, duration=dur))
-        yield intempo(next(rhythm_pat), tempo)
+# Unused
+# def generate_riff(score: Score, note_rules: dict, rhythm_rules: dict, tempo: int, reps: int, dur: float):
+#     note_pat = musx.markov(note_rules)
+#     rhythm_pat = musx.markov(rhythm_rules)
+#     for _ in range(reps):
+#         next_note = next(note_pat)
+#         if next_note:
+#             score.add(musx.Note(time=score.now, pitch=next_note, duration=dur))
+#         yield intempo(next(rhythm_pat), tempo)
 
 
 def generate_set_riff(note_rules: dict, rhythm_rules: dict, reps: int):
@@ -101,10 +72,12 @@ def generate_set_riff(note_rules: dict, rhythm_rules: dict, reps: int):
     rhythm_pat = musx.markov(rhythm_rules)
     return [(next(note_pat), next(rhythm_pat)) for _ in range(reps)]
 
+
 def generate_pattern(original_pattern: list, order: int = between(1, 4)):
     rules = markov_analyze(original_pattern, order)
     gen = musx.markov(rules)
     return [next(gen) for _ in range(len(original_pattern))]
+
 
 def compose_hi_hat(score: Score, tempo: int, ampl: float, sound: int = CLOSED_HI_HAT):
     '''
@@ -126,7 +99,7 @@ def compose_hi_hat(score: Score, tempo: int, ampl: float, sound: int = CLOSED_HI
         CLOSED_HI_HAT, CLOSED_HI_HAT, CLOSED_HI_HAT, OPEN_HI_HAT,
         CLOSED_HI_HAT, CLOSED_HI_HAT, CLOSED_HI_HAT, CLOSED_HI_HAT,
     ]
-    
+
     hi_hat_pattern = generate_pattern(hi_hat_pattern)
 
     pat = cycle(hi_hat_pattern)
