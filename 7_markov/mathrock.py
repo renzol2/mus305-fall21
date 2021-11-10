@@ -54,10 +54,10 @@ Markov for sections?
 
 '''
 
-chinchilla = [
+CHINCHILLA_KEYS = [
     'B3', 'C4', 'A3', 'F4', 'G4', 'E4', 'C4', 'C4', 'C5', 'A4', 'G4', 'A4', 'E4', 'C4', 'E4', 'C4', 'G4', 'E4', 'C4', 'D4', 'E4', 'C4', 'G4'
 ]
-chinchilla_rhys = [
+CHINCHILLA_RHYS = [
     0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 0.25, 0.25, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5
 ]
 
@@ -81,11 +81,9 @@ never_meant = [
     (Pitch('B4'), 0.5),
 ]
 
-# riff_keynums = [p.keynum() if p is not None else None for p, r in never_meant]
-# riff_rhythms = [0.5 for p, r in never_meant]
-
-riff_keynums = [Pitch(note).keynum() for note in chinchilla]
-riff_rhythms = chinchilla_rhys
+NEVER_MEANT_KEYNUMS = [
+    p.keynum() if p is not None else None for p, _ in never_meant]
+NEVER_MEANT_RHYS = [r for _, r in never_meant]
 
 
 def generate_riff(score: Score, note_rules: dict, rhythm_rules: dict, tempo: int, reps: int, dur: float):
@@ -103,6 +101,10 @@ def generate_set_riff(note_rules: dict, rhythm_rules: dict, reps: int):
     rhythm_pat = musx.markov(rhythm_rules)
     return [(next(note_pat), next(rhythm_pat)) for _ in range(reps)]
 
+def generate_pattern(original_pattern: list, order: int = between(1, 4)):
+    rules = markov_analyze(original_pattern, order)
+    gen = musx.markov(rules)
+    return [next(gen) for _ in range(len(original_pattern))]
 
 def compose_hi_hat(score: Score, tempo: int, ampl: float, sound: int = CLOSED_HI_HAT):
     '''
@@ -124,6 +126,8 @@ def compose_hi_hat(score: Score, tempo: int, ampl: float, sound: int = CLOSED_HI
         CLOSED_HI_HAT, CLOSED_HI_HAT, CLOSED_HI_HAT, OPEN_HI_HAT,
         CLOSED_HI_HAT, CLOSED_HI_HAT, CLOSED_HI_HAT, CLOSED_HI_HAT,
     ]
+    
+    hi_hat_pattern = generate_pattern(hi_hat_pattern)
 
     pat = cycle(hi_hat_pattern)
     for i in range(len(hi_hat_pattern)):
@@ -160,6 +164,9 @@ def compose_kick_snare(score: Score, tempo: int, ampl: float, snare_sound: int =
         SNARE, REST, REST, KICK,
         REST, KICK, SNARE, REST
     ]
+
+    kick_snare_pattern = generate_pattern(kick_snare_pattern)
+
     pat = cycle(kick_snare_pattern)
     for _ in range(len(kick_snare_pattern)):
         k = next(pat)
@@ -207,7 +214,7 @@ def compose_bass(score: Score, tempo: int, amp: float, reps: int):
         5: Pitch('G2'),
         6: Pitch('A2'),
     }
-    bass_rules = markov_analyze(chords, between(1,5))
+    bass_rules = markov_analyze(chords, between(1, 5))
     pat = musx.markov(bass_rules)
     on_down_beat = True
     down_beat_length = 4.5
@@ -220,7 +227,7 @@ def compose_bass(score: Score, tempo: int, amp: float, reps: int):
         on_down_beat = not on_down_beat
 
 
-def create_mathrock(score: Score, measures: int, tempo: int):
+def create_mathrock(score: Score, measures: int, tempo: int, keynums: list, rhythms: list):
     # Compose riff
     num_notes = 24
     note_rules = markov_analyze(riff_keynums, 1)
@@ -236,11 +243,13 @@ def create_mathrock(score: Score, measures: int, tempo: int):
 
 
 if __name__ == '__main__':
+    riff_keynums = [Pitch(note).keynum() for note in CHINCHILLA_KEYS]
+    riff_rhythms = NEVER_MEANT_RHYS
     tempo = 144
     track0 = MidiFile.metatrack(
         ins={0: ElectricGuitar_clean, 1: ElectricBass_finger, 2: ElectricGuitar_jazz})
 
     score = Score(out=Seq())
 
-    score.compose(create_mathrock(score, 8, tempo))
+    score.compose(create_mathrock(score, 8, tempo, riff_keynums, riff_rhythms))
     file = MidiFile("mathrock.mid", [track0, score.out]).write()
