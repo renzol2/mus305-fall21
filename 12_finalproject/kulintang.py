@@ -1,7 +1,8 @@
 import musx
 import pythonosc.udp_client
 import scosc  # in this script's directory
-from phrases import Phrase, DUYUG_CR_1_SAMPLE, DUYUG_A_BINALIG_C4_14_SAMPLE
+from phrases import Note, DUYUG_CR_1_SAMPLE, DUYUG_A_BINALIG_C4_14_SAMPLE
+from duyug_cr_1 import DUYUG_CR_1
 
 OSC_ADDRESS = '/musx/kulintang'
 
@@ -22,11 +23,11 @@ def plain_hunt():
     return [[0, 2, 1], [1, 2, 1]]
 
 
-def compose_phrase(score: musx.Score, phrase: Phrase, dur: float, amp: float, tempo: int):
+def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amp: float, tempo: int):
     '''
-    Adds a single kulintang phrase to the given score
+    Adds a single kulintang notes to the given score
     '''
-    for gong_num, beat_length, accent in phrase:
+    for gong_num, beat_length, accent in notes:
         now = 0
 
         # Add notes to score, depending on if there are 1-2 notes at the same time
@@ -49,11 +50,8 @@ def compose_phrase(score: musx.Score, phrase: Phrase, dur: float, amp: float, te
 
 
 if __name__ == '__main__':
-    print(DUYUG_CR_1_SAMPLE)
     oscout = pythonosc.udp_client.SimpleUDPClient("127.0.0.1", 57120)
     print(oscout)
-
-    scale = [i for i in range(8)]
 
     dur = 0.5
     amp = 0.5
@@ -61,5 +59,5 @@ if __name__ == '__main__':
 
     seq = musx.Seq()
     score = musx.Score(out=seq)
-    score.compose(compose_phrase(score, DUYUG_CR_1_SAMPLE + DUYUG_A_BINALIG_C4_14_SAMPLE, dur, amp, tempo))
+    score.compose(compose_kulintang(score, DUYUG_CR_1, dur, amp, tempo))
     scosc.oscplayer(seq, oscout)

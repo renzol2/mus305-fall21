@@ -12,9 +12,8 @@ sabay (two)
 '''
 
 Note = tuple[Union[int, tuple[int, int]], float, bool]
-Phrase = list[Note]
 
-DUYUG_CR_1_SAMPLE: Phrase = [
+DUYUG_CR_1_SAMPLE: list[Note] = [
     ((4, 1), 1/4, False),
     (1, 1/4, False),
     (5, 1/4, False),
@@ -25,7 +24,7 @@ DUYUG_CR_1_SAMPLE: Phrase = [
     (2, 1/4, False)
 ]
 
-DUYUG_A_BINALIG_C4_14_SAMPLE: Phrase = [
+DUYUG_A_BINALIG_C4_14_SAMPLE: list[Note] = [
     (1, 1/4, False),
     (1, 1/8, False),
     (1, 1/8, False),
