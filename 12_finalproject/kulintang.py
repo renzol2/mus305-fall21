@@ -38,10 +38,10 @@ def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amps: tu
         yield now
 
 
-def generate_pattern(original_pattern: list, order: int = musx.between(1, 4)):
+def generate_pattern(original_pattern: list, order: int = musx.between(1, 4), length: int = None):
     rules = musx.markov_analyze(original_pattern, order)
     gen = musx.markov(rules)
-    return [next(gen) for _ in range(len(original_pattern))]
+    return [next(gen) for _ in range(len(original_pattern) if length is None else length)]
 
 
 def pretty_print_kulintang_piece(notes: list[Note]):
@@ -57,10 +57,10 @@ if __name__ == '__main__':
     amps = 0.5, 1.2
     tempo = 100
 
-    markov_kulintang_piece = generate_pattern(DUYUG_CR_12, 3)
+    markov_kulintang_piece = generate_pattern(DUYUG_CR_12, 3, 1000)
     # pretty_print_kulintang_piece(markov_kulintang_piece)
 
     seq = musx.Seq()
     score = musx.Score(out=seq)
-    score.compose(compose_kulintang(score, DUYUG_CR_12, dur, amps, tempo))
+    score.compose(compose_kulintang(score, markov_kulintang_piece, dur, amps, tempo))
     scosc.oscplayer(seq, oscout)

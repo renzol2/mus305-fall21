@@ -1,6 +1,6 @@
 from phrases import Note
 
-def get_even_unaccented_notes(gong_nums: list[int]):
+def get_even_unaccented_notes(gong_nums: list):
     return [(x, 1/(len(gong_nums)), False) for x in gong_nums]
 
 # Opening
@@ -129,6 +129,40 @@ SUBUNIT_44_3: list[Note] = [
     (3, 1/2, False),
 ]
 
+SUBUNIT_655_5: list[Note] = [
+    (6, 1/4, False),
+    (5, 1/8, False),
+    (5, 1/8, False),
+    (0, 1/4, False),
+    (5, 1/4, False),
+]
+
+SUBUNIT_556: list[Note] = [
+    (5, 1/4, False),
+    (5, 1/4, False),
+    (6, 1/2, False),
+]
+
+SUBUNIT_67: list[Note] = get_even_unaccented_notes([6,7])
+
+SUBUNIT_4422: list[Note] = get_even_unaccented_notes([4,4,2,2])
+
+SUBUNIT_4566: list[Note] = get_even_unaccented_notes([4,5,6,6])
+
+SUBUNIT_5543: list[Note] = get_even_unaccented_notes([5,5,4,3])
+
+SUBUNIT_5654: list[Note] = get_even_unaccented_notes([5,6,5,4])
+
+SUBUNIT_5422: list[Note] = get_even_unaccented_notes([5,4,4,2])
+
+SUBUNIT_4256: list[Note] = get_even_unaccented_notes([0,(4,2),5,6])
+
+SUBUNIT_55544: list[Note] = get_even_unaccented_notes([5,5,(5,4),4])
+
+SUBUNIT_56542: list[Note] = get_even_unaccented_notes([5,6,5,(4,2)])
+
+SUBUNIT_52522: list[Note] = get_even_unaccented_notes([(5,2),5,2,2])
+
 
 # Phrases
 PHRASE_1: list[Note] = get_even_unaccented_notes([4,3,0,5]) + SUBUNIT_443
@@ -201,6 +235,23 @@ PHRASE_27: list[Note] = SUBUNIT_4554 + SUBUNIT_33
 
 PHRASE_28: list[Note] = SUBUNIT_3355 + SUBUNIT_44_3
 
+PHRASE_29: list[Note] = SUBUNIT_655_5 + SUBUNIT_43
+
+PHRASE_30: list[Note] = SUBUNIT_556 + SUBUNIT_67
+
+PHRASE_31: list[Note] = SUBUNIT_65_5 + SUBUNIT_4_35
+
+PHRASE_32: list[Note] = SUBUNIT_65_5 + SUBUNIT_4422
+
+PHRASE_33: list[Note] = SUBUNIT_4566 + SUBUNIT_5543
+
+PHRASE_34: list[Note] = SUBUNIT_5654 + SUBUNIT_5422
+
+PHRASE_35: list[Note] = SUBUNIT_4256 + SUBUNIT_55544
+
+PHRASE_36: list[Note] = SUBUNIT_56542 + SUBUNIT_52522
+
+
 # Composition
 DUYUG_CR_12: list[Note] = \
     OPENING_PHRASE_1 + 5*OPENING_PHRASE_2 + \
@@ -221,5 +272,8 @@ DUYUG_CR_12: list[Note] = \
         PHRASE_23 + PHRASE_10 + \
                             PHRASE_24 + PHRASE_25 + \
                             PHRASE_26 + PHRASE_27 + \
-                            PHRASE_24 + PHRASE_28
-
+                            PHRASE_24 + PHRASE_28 + \
+                PHRASE_29 + \
+    PHRASE_23 + PHRASE_29 + PHRASE_30 + PHRASE_31 + \
+                                        PHRASE_32 + \
+    PHRASE_33 + PHRASE_34 + PHRASE_35 + PHRASE_36
