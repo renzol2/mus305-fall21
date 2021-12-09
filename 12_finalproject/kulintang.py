@@ -4,6 +4,7 @@ import scosc  # in this script's directory
 from phrases import Note
 from transcriptions.duyug_cr_1 import DUYUG_CR_1_OPENING, DUYUG_CR_1_BODY
 from transcriptions.duyug_cr_12 import DUYUG_CR_12_BODY, DUYUG_CR_12_CLOSING
+from transcriptions.duyug_cr_13 import DUYUG_CR_13_OPENING
 
 OSC_ADDRESS = '/musx/kulintang'
 
@@ -65,5 +66,5 @@ if __name__ == '__main__':
     seq = musx.Seq()
     score = musx.Score(out=seq)
     score.compose(compose_kulintang(
-        score, markov_kulintang_piece, dur, amps, tempo))
+        score, DUYUG_CR_13_OPENING, dur, amps, tempo))
     scosc.oscplayer(seq, oscout)

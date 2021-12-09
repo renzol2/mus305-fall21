@@ -1,7 +1,4 @@
-from phrases import Note
-
-def get_even_unaccented_notes(gong_nums: list):
-    return [(x, 1/(len(gong_nums)), False) for x in gong_nums]
+from phrases import Note, get_even_unaccented_notes
 
 # Opening
 OPENING_PHRASE_1: list[Note] = [
