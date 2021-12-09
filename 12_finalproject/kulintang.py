@@ -2,7 +2,8 @@ import musx
 import pythonosc.udp_client
 import scosc  # in this script's directory
 from phrases import Note
-from duyug_cr_1 import DUYUG_CR_1
+from transcriptions.duyug_cr_1 import DUYUG_CR_1
+from transcriptions.duyug_cr_12 import DUYUG_CR_12
 
 OSC_ADDRESS = '/musx/kulintang'
 
@@ -18,11 +19,13 @@ def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amps: tu
 
         # Add notes to score, depending on if there are 1-2 notes at the same time
         if isinstance(gong_num, int):
-            msg = scosc.OscMessage(
-                OSC_ADDRESS, score.now + now, gong_num, 0, dur, amp)
-            score.add(msg)
+            # Avoid adding notes if there's a rest
+            if gong_num != 0:
+                msg = scosc.OscMessage(
+                    OSC_ADDRESS, score.now + now, gong_num, 0, dur, amp)
+                score.add(msg)
         else:
-            # In this case, gong_num is a 2-tuple
+            # In this case, we play 2 notes (gong_num is a 2-tuple)
             msgs = [
                 scosc.OscMessage(
                     OSC_ADDRESS, score.now + now, num, 0, dur, amp
@@ -51,13 +54,13 @@ if __name__ == '__main__':
     print(oscout)
 
     dur = 0.5
-    amps = 0.5, 0.7
+    amps = 0.5, 1.2
     tempo = 100
 
-    markov_kulintang_piece = generate_pattern(DUYUG_CR_1, 2)
-    pretty_print_kulintang_piece(markov_kulintang_piece)
+    markov_kulintang_piece = generate_pattern(DUYUG_CR_12, 3)
+    # pretty_print_kulintang_piece(markov_kulintang_piece)
 
     seq = musx.Seq()
     score = musx.Score(out=seq)
-    score.compose(compose_kulintang(score, markov_kulintang_piece, dur, amps, tempo))
+    score.compose(compose_kulintang(score, DUYUG_CR_12, dur, amps, tempo))
     scosc.oscplayer(seq, oscout)
