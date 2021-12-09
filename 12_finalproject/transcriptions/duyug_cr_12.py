@@ -163,6 +163,45 @@ SUBUNIT_56542: list[Note] = get_even_unaccented_notes([5,6,5,(4,2)])
 
 SUBUNIT_52522: list[Note] = get_even_unaccented_notes([(5,2),5,2,2])
 
+SUBUNIT_41541: list[Note] = get_even_unaccented_notes([0, (4,1), 5, (4,1)])
+
+SUBUNIT_61_4242: list[Note] = [
+    ((6,1), 1/2, False),
+    ((4,2), 1/4, False),
+    ((4,2), 1/4, False),
+]
+
+SUBUNIT_51451: list[Note] = get_even_unaccented_notes([0, (5,1), 4, (5,1)])
+
+SUBUNIT_5143232: list[Note] = get_even_unaccented_notes([(5,1), 4, (3,2), (3,2)])
+
+SUBUNIT_3234: list[Note] = [
+    ((3,2), 1/2, False),
+    (3, 1/4, False),
+    (4, 1/4, False),
+]
+
+SUBUNIT_5243233: list[Note] = [
+    ((5,2), 1/4, False),
+    (4, 1/4, False),
+    ((3,2), 1/4, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+]
+
+SUBUNIT_1234: list[Note] = get_even_unaccented_notes([1,2,3,4])
+
+SUBUNIT_56777: list[Note] = [
+    (5, 1/4, False),
+    (6, 1/4, False),
+    (7, 1/4, False),
+    (7, 1/8, False),
+    (7, 1/8, False),
+]
+
+SUBUNIT_7654 = get_even_unaccented_notes([7,6,5,4])
+
+SUBUNIT_5554 = get_even_unaccented_notes([5,5,5,4])
 
 # Phrases
 PHRASE_1: list[Note] = get_even_unaccented_notes([4,3,0,5]) + SUBUNIT_443
@@ -251,6 +290,20 @@ PHRASE_35: list[Note] = SUBUNIT_4256 + SUBUNIT_55544
 
 PHRASE_36: list[Note] = SUBUNIT_56542 + SUBUNIT_52522
 
+PHRASE_37: list[Note] = SUBUNIT_41541 + SUBUNIT_61_4242
+
+PHRASE_38: list[Note] = SUBUNIT_51451 + SUBUNIT_5143232
+
+PHRASE_39: list[Note] = SUBUNIT_3234 + SUBUNIT_5243233
+
+PHRASE_40: list[Note] = SUBUNIT_1234 + SUBUNIT_5243233
+
+CLOSING_PHRASE_1: list[Note] = SUBUNIT_1234 + SUBUNIT_56777
+
+CLOSING_PHRASE_2: list[Note] = SUBUNIT_7654 + SUBUNIT_5554
+
+FINAL: list[Note] = [(3, 1, True)]
+
 
 # Composition
 DUYUG_CR_12: list[Note] = \
@@ -276,4 +329,5 @@ DUYUG_CR_12: list[Note] = \
                 PHRASE_29 + \
     PHRASE_23 + PHRASE_29 + PHRASE_30 + PHRASE_31 + \
                                         PHRASE_32 + \
-    PHRASE_33 + PHRASE_34 + PHRASE_35 + PHRASE_36
+    PHRASE_33 + PHRASE_34 + PHRASE_35 + PHRASE_36 + \
+    PHRASE_37 + 2*PHRASE_38 + PHRASE_39 + PHRASE_40 + CLOSING_PHRASE_1 + CLOSING_PHRASE_2 + FINAL

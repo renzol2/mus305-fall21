@@ -25,6 +25,9 @@ k.vkey(7.rand, 0, nil, 0.7);
   }, '/musx/kulintang', nil, NetAddr.langPort);
 );
 
+// Show scope
+s.scope;
+
 // Stop server
 s.quit();
 

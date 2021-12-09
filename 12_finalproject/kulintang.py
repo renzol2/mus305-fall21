@@ -62,5 +62,5 @@ if __name__ == '__main__':
 
     seq = musx.Seq()
     score = musx.Score(out=seq)
-    score.compose(compose_kulintang(score, markov_kulintang_piece, dur, amps, tempo))
+    score.compose(compose_kulintang(score, DUYUG_CR_12, dur, amps, tempo))
     scosc.oscplayer(seq, oscout)
