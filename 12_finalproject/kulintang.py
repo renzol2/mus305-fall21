@@ -3,7 +3,7 @@ import pythonosc.udp_client
 import scosc  # in this script's directory
 from phrases import Note
 from transcriptions.duyug_cr_1 import DUYUG_CR_1
-from transcriptions.duyug_cr_12 import DUYUG_CR_12
+from transcriptions.duyug_cr_12 import DUYUG_CR_12_OPENING, DUYUG_CR_12_BODY, DUYUG_CR_12_CLOSING
 
 OSC_ADDRESS = '/musx/kulintang'
 
@@ -50,17 +50,20 @@ def pretty_print_kulintang_piece(notes: list[Note]):
 
 
 if __name__ == '__main__':
-    oscout = pythonosc.udp_client.SimpleUDPClient("127.0.0.1", 57120)
+    oscout = pythonosc.udp_client.SimpleUDPClient('127.0.0.1', 57120)
     print(oscout)
 
     dur = 0.5
     amps = 0.5, 1.2
     tempo = 100
 
-    markov_kulintang_piece = generate_pattern(DUYUG_CR_12, 3, 1000)
+    markov_kulintang_body = generate_pattern(DUYUG_CR_12_BODY, 10, 1000)
+    markov_kulintang_piece = DUYUG_CR_12_OPENING + \
+        markov_kulintang_body + DUYUG_CR_12_CLOSING
     # pretty_print_kulintang_piece(markov_kulintang_piece)
 
     seq = musx.Seq()
     score = musx.Score(out=seq)
-    score.compose(compose_kulintang(score, DUYUG_CR_12, dur, amps, tempo))
+    score.compose(compose_kulintang(
+        score, markov_kulintang_piece, dur, amps, tempo))
     scosc.oscplayer(seq, oscout)
