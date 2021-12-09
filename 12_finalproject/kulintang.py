@@ -2,8 +2,8 @@ import musx
 import pythonosc.udp_client
 import scosc  # in this script's directory
 from phrases import Note
-from transcriptions.duyug_cr_1 import DUYUG_CR_1
-from transcriptions.duyug_cr_12 import DUYUG_CR_12_OPENING, DUYUG_CR_12_BODY, DUYUG_CR_12_CLOSING
+from transcriptions.duyug_cr_1 import DUYUG_CR_1_OPENING, DUYUG_CR_1_BODY
+from transcriptions.duyug_cr_12 import DUYUG_CR_12_BODY, DUYUG_CR_12_CLOSING
 
 OSC_ADDRESS = '/musx/kulintang'
 
@@ -57,8 +57,8 @@ if __name__ == '__main__':
     amps = 0.5, 1.2
     tempo = 100
 
-    markov_kulintang_body = generate_pattern(DUYUG_CR_12_BODY, 10, 1000)
-    markov_kulintang_piece = DUYUG_CR_12_OPENING + \
+    markov_kulintang_body = generate_pattern(DUYUG_CR_1_BODY + DUYUG_CR_12_BODY, order=10, length=1000)
+    markov_kulintang_piece = DUYUG_CR_1_OPENING + \
         markov_kulintang_body + DUYUG_CR_12_CLOSING
     # pretty_print_kulintang_piece(markov_kulintang_piece)
 

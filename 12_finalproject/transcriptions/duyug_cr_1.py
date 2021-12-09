@@ -1,7 +1,7 @@
 from phrases import Note
 
 # Opening
-OPENING: list[Note] = [
+DUYUG_CR_1_OPENING: list[Note] = [
     (3, 1/2, False)
 ] * 4
 
@@ -50,5 +50,6 @@ FINAL_NOTE: list[Note] = [
 ]
 
 # Composition
-DUYUG_CR_1 = OPENING + BODY_1*3 + BODY_2*3 + \
-    BODY_1*3 + BODY_3*3 + CLOSING + FINAL_NOTE
+DUYUG_CR_1_BODY = BODY_1*3 + BODY_2*3 + BODY_1*3 + BODY_3*3
+DUYUG_CR_1_CLOSING = CLOSING + FINAL_NOTE
+DUYUG_CR_1 = DUYUG_CR_1_OPENING + DUYUG_CR_1_BODY + DUYUG_CR_1_CLOSING
