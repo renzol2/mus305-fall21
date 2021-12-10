@@ -2,15 +2,17 @@ import musx
 import math
 import pythonosc.udp_client
 import scosc  # in this script's directory
-from phrases import Note, DUYUG_DABAKAN_SAMPLE_PATTERN, BINALIG_DABAKAN_SAMPLE_PATTERN, BINALIG_BABANDIR_SAMPLE_PATTERN, DUYUG_BABANDIR_SAMPLE_PATTERN_1
+from phrases import Note, DUYUG_DABAKAN_SAMPLE_PATTERN, BINALIG_DABAKAN_SAMPLE_PATTERN, BINALIG_BABANDIR_SAMPLE_PATTERN, DUYUG_BABANDIR_SAMPLE_PATTERN_1, SCALE
 from transcriptions.duyug_cr_1 import DUYUG_CR_1_OPENING, DUYUG_CR_1_BODY, DUYUG_CR_1
 from transcriptions.duyug_cr_12 import DUYUG_CR_12_BODY, DUYUG_CR_12_CLOSING, DUYUG_CR_12
 from transcriptions.duyug_cr_13 import DUYUG_CR_13, DUYUG_CR_13_BODY
 from transcriptions.binalig_cr_23 import BINALIG_CR_23, BINALIG_CR_23_OPENING, BINALIG_CR_23_BODY, BINALIG_CR_23_CLOSING
+from tuning import UNIVERSITY_PHILIPPINES_TUNING, BUTOCAN_TUNING, ANDRE_TUNING, JAVANESE_TUNING
 
 KULINTANG_OSC_ADDRESS = '/musx/kulintang'
 DABAKAN_OSC_ADDRESS = '/musx/dabakan'
 BABANDIR_OSC_ADDRESS = '/musx/babandir'
+KULINTANG_TUNED_OSC_ADDRESS = '/musx/kulintangTuned'
 
 
 def get_composition_length(notes: list[Note]) -> float:
@@ -23,7 +25,7 @@ def get_composition_length(notes: list[Note]) -> float:
     return total_length
 
 
-def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amps: tuple[float, float], tempo: int, address: str = KULINTANG_OSC_ADDRESS):
+def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amps: tuple[float, float], tempo: int, address: str = KULINTANG_OSC_ADDRESS, tuning: list[int] =None):
     '''
     Adds kulintang notes to the given score
     '''
@@ -36,10 +38,12 @@ def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amps: tu
         if isinstance(gong_num, int):
             # Avoid adding notes if there's a rest
             if gong_num != 0:
+                # If using alternate tuning, tune gongs by 12-TET half-step, rather than gong number
+                if address == KULINTANG_TUNED_OSC_ADDRESS:
+                    gong_num = tuning[gong_num-1]
                 # If not a kulintang, randomize between percussive hits
-                if address != KULINTANG_OSC_ADDRESS:
+                elif address != KULINTANG_OSC_ADDRESS:
                     gong_num = musx.between(0, 4)
-                
                 # Add message to score
                 msg = scosc.OscMessage(
                     address, score.now + now, gong_num, 0, dur, amp)
@@ -48,7 +52,7 @@ def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amps: tu
             # In this case, we play 2 notes (gong_num is a tuple)
             msgs = [
                 scosc.OscMessage(
-                    address, score.now + now, num, 0, dur, amp
+                    address, score.now + now, tuning[num-1] if KULINTANG_TUNED_OSC_ADDRESS else num, 0, dur, amp
                 ) for num in gong_num
             ]
             for msg in msgs:
@@ -76,21 +80,26 @@ if __name__ == '__main__':
     # Basic parameters
     dur = 0.5
     amps = 0.5, 0.9  # non-accent, accent
-    tempo = 70
+    tempo = 75
+    use_alternate_tuning = True
+    alternate_tuning = ANDRE_TUNING
+    print(alternate_tuning)
 
     # Compositional parameters
     use_markov = False
-    kulintang_part = BINALIG_CR_23
+    kulintang_part = BINALIG_CR_23  # overwritten if use_markov=True
 
     # Markov chain parameters
     markov_data = DUYUG_CR_13_BODY + DUYUG_CR_12_BODY
-    markov_order = 8  # duyug: ~3-10, binalig: ~12
+    markov_order = 6  # duyug: ~3-10, binalig: ~12
     opening_pattern = DUYUG_CR_1_OPENING
     closing_pattern = DUYUG_CR_12_CLOSING
     num_notes = 200
 
     # Other instrument parameters
-    dabakan_pattern = BINALIG_DABAKAN_SAMPLE_PATTERN
+    play_dabakan = True
+    play_babandir = True
+    dabakan_pattern =  BINALIG_DABAKAN_SAMPLE_PATTERN
     babandir_pattern = BINALIG_BABANDIR_SAMPLE_PATTERN
 
     if use_markov:
@@ -116,11 +125,14 @@ if __name__ == '__main__':
     score = musx.Score(out=seq)
 
     # Compose score with parameters
-    score.compose([
-        compose_kulintang(score, kulintang_part, dur, amps, tempo, KULINTANG_OSC_ADDRESS),
-        compose_kulintang(score, dabakan_part, dur, amps, tempo, DABAKAN_OSC_ADDRESS),
-        compose_kulintang(score, babandir_part, dur, amps, tempo, BABANDIR_OSC_ADDRESS),
-    ])
+    kulintang_address = KULINTANG_TUNED_OSC_ADDRESS if use_alternate_tuning else KULINTANG_OSC_ADDRESS
+    tuning = alternate_tuning if use_alternate_tuning else None
+    composers = [compose_kulintang(score, kulintang_part, dur, amps, tempo, kulintang_address, tuning)]
+    if play_babandir:
+        composers.append(compose_kulintang(score, babandir_part, dur, amps, tempo, BABANDIR_OSC_ADDRESS))
+    if play_dabakan:
+        composers.append(compose_kulintang(score, dabakan_part, dur, amps, tempo, DABAKAN_OSC_ADDRESS))
+    score.compose(composers)
 
     # Write to file
     # track0 = musx.MidiFile.metatrack()

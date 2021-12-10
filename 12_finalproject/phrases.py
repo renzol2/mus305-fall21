@@ -104,3 +104,7 @@ DUYUG_BABANDIR_SAMPLE_PATTERN_3: list[Note] = [
     (1, 1/4, False),
     (1, 1/2, False),
 ]
+
+SCALE: list[Note] = [
+    (i+1, 1, False) for i in range(8)
+]
