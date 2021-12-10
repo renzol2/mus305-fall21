@@ -47,7 +47,7 @@ DUYUG_A_BINALIG_C4_14_SAMPLE: list[Note] = [
 ]
 
 # Provided by: Kristina Benitez
-DUYUG_DABAKAN_SAMPLE_PATTERN = [
+DUYUG_DABAKAN_SAMPLE_PATTERN: list[Note] = [
     (1, 1/4, False),
     (1, 1/8, False),
     (1, 1/8, False),
@@ -56,7 +56,7 @@ DUYUG_DABAKAN_SAMPLE_PATTERN = [
 ]
 
 # Provided by: Danongan Kalanduyan nd the Palabunibunyan Kulintang Ensemble
-BINALIG_DABAKAN_SAMPLE_PATTERN = [
+BINALIG_DABAKAN_SAMPLE_PATTERN: list[Note] = [
     (1, 1/4, False),
     (1, 1/8, True),
     (1, 1/8, False),
@@ -70,4 +70,37 @@ BINALIG_DABAKAN_SAMPLE_PATTERN = [
     (1, 1/4, True),
     (0, 1/8, False),
     (1, 1/8, False),
+]
+
+# Provided by: Danongan Kalanduyan nd the Palabunibunyan Kulintang Ensemble
+BINALIG_BABANDIR_SAMPLE_PATTERN: list[Note] = [
+    (1, 1/2, True),
+    (1, 1/4, False),
+    (1, 1/4, False),
+    (1, 1/2, False),
+    (1, 1/2, False),
+]
+
+# Provided by: Kristina Benitez
+DUYUG_BABANDIR_SAMPLE_PATTERN_1: list[Note] = DUYUG_DABAKAN_SAMPLE_PATTERN
+
+# Provided by: Kristina Benitez
+DUYUG_BABANDIR_SAMPLE_PATTERN_2: list[Note] = [
+    (1, 1/4, True),
+    (1, 1/2, False),
+    (1, 1/4, False),
+
+    (1, 1/2, False),
+    (1, 1/2, False),
+]
+
+# Provided by: Kristina Benitez
+DUYUG_BABANDIR_SAMPLE_PATTERN_3: list[Note] = [
+    (1, 1/2, True),
+    (1, 1/4, False),
+    (1, 1/4, False),
+
+    (1, 1/4, False),
+    (1, 1/4, False),
+    (1, 1/2, False),
 ]
