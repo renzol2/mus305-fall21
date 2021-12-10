@@ -179,6 +179,99 @@ SUBUNIT_54343423 = [
     (3, 1/8, False),
 ]
 
+SUBUNIT_5_5_5456 = [
+    (5, 1/4, False),
+    (5, 1/4, False),
+    (5, 1/8, False),
+    (4, 1/8, False),
+    (5, 1/8, False),
+    (6, 1/8, False),
+]
+
+SUBUNIT_5_543423 = [
+    (5, 1/4, False),
+    (5, 1/8, False),
+    (4, 1/8, False),
+    (3, 1/8, False),
+    (4, 1/8, False),
+    (2, 1/8, False),
+    (3, 1/8, False),
+]
+
+SUBUNIT_2324342 = [
+    (2, 1/8, False),
+    (3, 1/8, False),
+    (2, 1/8, False),
+    (4, 1/8, False),
+    (3, 1/8, False),
+    (4, 1/8, False),
+    (2, 1/4, False),
+]
+
+SUBUNIT_345_4455 = [
+    (3, 1/8, False),
+    (4, 1/8, False),
+    (5, 1/4, False),
+    (4, 1/8, False),
+    (4, 1/8, False),
+    (5, 1/8, False),
+    (5, 1/8, False),
+]
+
+SUBUNIT_54343424 = get_even_unaccented_notes([5,4,3,4,3,4,2,4])
+
+SUBUNIT_3_333332 = [
+    (3, 1/4, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+    (2, 1/8, False),
+]
+
+SUBUNIT_345_5433 = [
+    (3, 1/8, False),
+    (4, 1/8, False),
+    (5, 1/4, False),
+    (5, 1/8, False),
+    (4, 1/8, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+]
+
+SUBUNIT_3232345 = [
+    (3, 1/8, False),
+    (2, 1/8, False),
+    (3, 1/8, False),
+    (2, 1/8, False),
+    (3, 1/8, False),
+    (4, 1/8, False),
+    (5, 1/4, False),
+]
+
+SUBUNIT_32343424 = get_even_unaccented_notes([3,2,3,4,3,4,2,4])
+
+SUBUNIT_3_333355 = [
+    (3, 1/4, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+    (3, 1/8, False),
+    (5, 1/8, False),
+    (5, 1/8, False),
+]
+
+SUBUNIT_5443454435 = get_even_unaccented_notes([
+    (5,4), 4, 3, 4, (5,4), 4, 3, 5
+])
+
+SUBUNIT_43212121 = get_even_unaccented_notes([4,3,2,1,2,1,2,1])
+
+SUBUNIT_21232121 = get_even_unaccented_notes([2,1,2,3,2,1,2,1])
+
+
+
 # Phrases
 PHRASE_1 = SUBUNIT_435354 + SUBUNIT_567_7
 
@@ -226,14 +319,31 @@ PHRASE_22 = SUBUNIT_34343423 + SUBUNIT_24342234
 
 PHRASE_23 = SUBUNIT_54343423 + SUBUNIT_24342234
 
+PHRASE_24 = SUBUNIT_5_5_5456 + SUBUNIT_77756
+
+PHRASE_25 = SUBUNIT_5_543423 + SUBUNIT_2324342
+
+PHRASE_26 = SUBUNIT_345_4455 + SUBUNIT_54343423
+
+PHRASE_27 = SUBUNIT_3_333332 + SUBUNIT_345_5433
+
+PHRASE_28 = SUBUNIT_3232345 + SUBUNIT_54343424
+
+PHRASE_29 = SUBUNIT_3_333332 + SUBUNIT_32343424
+
+PHRASE_30 = SUBUNIT_3_333355 + SUBUNIT_5443454435
+
+PHRASE_31 = SUBUNIT_43212121 + SUBUNIT_21232121
+
 DOUBLE_PHRASE_1 = PHRASE_8 + PHRASE_9
 DOUBLE_PHRASE_2 = PHRASE_10 + PHRASE_11
+DOUBLE_PHRASE_3 = PHRASE_27 + PHRASE_28
 
 # Opening
-DUYUG_CR_23_OPENING = OPENING_PHRASE_1 + OPENING_PHRASE_2
+BINALIG_CR_23_OPENING = OPENING_PHRASE_1 + OPENING_PHRASE_2
 
 # Body
-DUYUG_CR_23_BODY = \
+BINALIG_CR_23_BODY = \
     PHRASE_1 + PHRASE_2 + PHRASE_3 + \
     PHRASE_4 + \
     3*PHRASE_5 + \
@@ -248,10 +358,15 @@ DUYUG_CR_23_BODY = \
                             PHRASE_13 + PHRASE_17 + \
                                         3*PHRASE_18 + \
                             PHRASE_20 + PHRASE_21 + \
-                            PHRASE_22 + PHRASE_23
+                            PHRASE_22 + PHRASE_23 + \
+    PHRASE_24 + PHRASE_25 + \
+    2*DOUBLE_PHRASE_2 + \
+    PHRASE_7
 
 # Closing
-DUYUG_CR_23_CLOSING = []
+FINAL_NOTE = get_even_unaccented_notes([2])
+BINALIG_CR_23_CLOSING = \
+    PHRASE_26 + 2*DOUBLE_PHRASE_3 + PHRASE_29 + PHRASE_30 + PHRASE_31 + FINAL_NOTE
 
 # Composition
-DUYUG_CR_23 = DUYUG_CR_23_OPENING + DUYUG_CR_23_BODY + DUYUG_CR_23_CLOSING
+BINALIG_CR_23 = BINALIG_CR_23_OPENING + BINALIG_CR_23_BODY + BINALIG_CR_23_CLOSING
