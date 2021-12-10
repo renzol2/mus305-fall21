@@ -5,6 +5,7 @@ from phrases import Note
 from transcriptions.duyug_cr_1 import DUYUG_CR_1_OPENING, DUYUG_CR_1_BODY
 from transcriptions.duyug_cr_12 import DUYUG_CR_12_BODY, DUYUG_CR_12_CLOSING, DUYUG_CR_12
 from transcriptions.duyug_cr_13 import DUYUG_CR_13, DUYUG_CR_13_BODY
+from transcriptions.binalig_cr_23 import DUYUG_CR_23
 
 OSC_ADDRESS = '/musx/kulintang'
 
@@ -57,7 +58,7 @@ if __name__ == '__main__':
 
     dur = 0.5
     amps = 0.5, 1.2
-    tempo = 100
+    tempo = 65
     markov_order = 3
     num_notes = 200
 
@@ -73,11 +74,11 @@ if __name__ == '__main__':
 
     # Compose score with parameters
     score.compose(compose_kulintang(
-        score, markov_kulintang_piece, dur, amps, tempo))
+        score, DUYUG_CR_23, dur, amps, tempo))
 
     # Write to file
-    track0 = musx.MidiFile.metatrack()
-    file = musx.MidiFile('kulintang.mid', [track0, score.out]).write()
+    # track0 = musx.MidiFile.metatrack()
+    # file = musx.MidiFile('kulintang.mid', [track0, score.out]).write()
 
     # Send to SuperCollider
     scosc.oscplayer(seq, oscout)

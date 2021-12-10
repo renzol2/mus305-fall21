@@ -1,4 +1,4 @@
-from phrases import Note, get_even_unaccented_notes
+from phrases import get_even_unaccented_notes
 from .duyug_cr_12 import OPENING_PHRASE_1, OPENING_PHRASE_2
 
 # Subunits
