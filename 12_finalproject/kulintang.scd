@@ -1,3 +1,5 @@
+Server.killAll
+
 // Boot the server
 (
   Server.default=s=Server.local;
@@ -26,7 +28,7 @@ VKey(\babandir).loadAsSeries(s, z, channels: 0);
 
 VKey(\kulintangTest).loadAsSeries(s, f, channels: 0);
 t = VKey.db('kulintangTest');
-t.vkey(12, 0, nil, 0.7);
+t.vkey(9, 0, nil, 0.7);
 
 // Get reference to database
 k = VKey.db('kulintang');
@@ -35,10 +37,8 @@ b = VKey.db('babandir');
 
 // Play random note
 k.vkey(7, 0, nil, 0.7);
-d.vkey(7.rand, 0, nil, 0.7);
-b.vkey(30, 0, nil, 0.7);
-
-// Our tuning (very approximate): A Bb C D F F# A C
+d.vkey(4.rand, 0, nil, 0.7);
+b.vkey(4.rand, 0, nil, 0.7);
 
 // Setup callback to listen to OscMessages from musx
 (

@@ -3,7 +3,7 @@ import math
 import pythonosc.udp_client
 import scosc  # in this script's directory
 from phrases import Note, DUYUG_DABAKAN_SAMPLE_PATTERN, BINALIG_DABAKAN_SAMPLE_PATTERN, BINALIG_BABANDIR_SAMPLE_PATTERN, DUYUG_BABANDIR_SAMPLE_PATTERN_1, SCALE
-from transcriptions.duyug_cr_1 import DUYUG_CR_1_OPENING, DUYUG_CR_1_BODY, DUYUG_CR_1
+from transcriptions.duyug_cr_1 import DUYUG_CR_1_OPENING, DUYUG_CR_1_BODY, DUYUG_CR_1, DUYUG_CR_1_CLOSING
 from transcriptions.duyug_cr_12 import DUYUG_CR_12_BODY, DUYUG_CR_12_CLOSING, DUYUG_CR_12
 from transcriptions.duyug_cr_13 import DUYUG_CR_13, DUYUG_CR_13_BODY
 from transcriptions.binalig_cr_23 import BINALIG_CR_23, BINALIG_CR_23_OPENING, BINALIG_CR_23_BODY, BINALIG_CR_23_CLOSING
@@ -52,7 +52,7 @@ def compose_kulintang(score: musx.Score, notes: list[Note], dur: float, amps: tu
             # In this case, we play 2 notes (gong_num is a tuple)
             msgs = [
                 scosc.OscMessage(
-                    address, score.now + now, tuning[num-1] if KULINTANG_TUNED_OSC_ADDRESS else num, 0, dur, amp
+                    address, score.now + now, tuning[num-1] if address == KULINTANG_TUNED_OSC_ADDRESS else num, 0, dur, amp
                 ) for num in gong_num
             ]
             for msg in msgs:
@@ -82,23 +82,23 @@ if __name__ == '__main__':
     amps = 0.5, 0.9  # non-accent, accent
     tempo = 75
     use_alternate_tuning = True
-    alternate_tuning = ANDRE_TUNING
+    alternate_tuning = UNIVERSITY_PHILIPPINES_TUNING
     print(alternate_tuning)
 
     # Compositional parameters
     use_markov = False
-    kulintang_part = BINALIG_CR_23  # overwritten if use_markov=True
+    kulintang_part = SCALE  # overwritten if use_markov=True
 
     # Markov chain parameters
-    markov_data = DUYUG_CR_13_BODY + DUYUG_CR_12_BODY
-    markov_order = 6  # duyug: ~3-10, binalig: ~12
+    markov_data = DUYUG_CR_1_BODY + DUYUG_CR_12_BODY + DUYUG_CR_13_BODY + BINALIG_CR_23_BODY
+    markov_order = 8  # duyug: ~3-10, binalig: ~12
     opening_pattern = DUYUG_CR_1_OPENING
-    closing_pattern = DUYUG_CR_12_CLOSING
-    num_notes = 200
+    closing_pattern = DUYUG_CR_1_CLOSING
+    num_notes = 100
 
     # Other instrument parameters
-    play_dabakan = True
-    play_babandir = True
+    play_dabakan = False
+    play_babandir = False
     dabakan_pattern =  BINALIG_DABAKAN_SAMPLE_PATTERN
     babandir_pattern = BINALIG_BABANDIR_SAMPLE_PATTERN
 
