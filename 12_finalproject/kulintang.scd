@@ -1,70 +1,142 @@
 Server.killAll
+ServerOptions.outDevices
 
 // Boot the server
 (
-  Server.default=s=Server.local;
-  s.boot;
+s.options.outDevice = 'Audio Out';
+s.waitForBoot({
+	b = ();
+	b.kulintang = PathName("samples/kulintang".resolveRelative).entries.collect({
+	arg file;
+	Buffer.readChannel(s, file.fullPath, channels:[0]);
+});
+	b.dabakan = PathName("samples/dabakan".resolveRelative).entries.collect({
+		arg file;
+		Buffer.readChannel(s, file.fullPath, channels:[0]);
+	});
+	b.babandir = PathName("samples/babandir".resolveRelative).entries.collect({
+		arg file;
+		Buffer.readChannel(s, file.fullPath, channels:[0]);
+	});
+
+
+});
 )
 
-
-// Find path of kulintang samples
-x = "/Users/Renzo Ledesma/mus305/renzol2/12_finalproject/samples/kulintang/*.wav".pathMatch;
-
-// Find path of dabakan samples
-y = "/Users/Renzo Ledesma/mus305/renzol2/12_finalproject/samples/dabakan/*.wav".pathMatch;
-
-// Find path of babandir samples
-z = "/Users/Renzo Ledesma/mus305/renzol2/12_finalproject/samples/babandir/*.wav".pathMatch;
-
-// Get singular kulintang sample
-f = "/Users/Renzo Ledesma/mus305/renzol2/12_finalproject/samples/kulintang/kulintang1.wav".pathMatch;
-
-// Load samples into VKey
 (
-VKey(\kulintang).loadAsSeries(s, x, channels: 0);
-VKey(\dabakan).loadAsSeries(s, y, channels: 0);
-VKey(\babandir).loadAsSeries(s, z, channels: 0);
+// Define SynthDefs
+SynthDef.new(\kulintang, {
+	arg gongIndex, amp;
+
+	var sig = Select.ar(gongIndex, [
+		PlayBuf.ar(1, b.kulintang[0], doneAction: 2),
+		PlayBuf.ar(1, b.kulintang[1], doneAction: 2),
+		PlayBuf.ar(1, b.kulintang[2], doneAction: 2),
+		PlayBuf.ar(1, b.kulintang[3], doneAction: 2),
+		PlayBuf.ar(1, b.kulintang[4], doneAction: 2),
+		PlayBuf.ar(1, b.kulintang[5], doneAction: 2),
+		PlayBuf.ar(1, b.kulintang[6], doneAction: 2),
+		PlayBuf.ar(1, b.kulintang[7], doneAction: 2),
+	]);
+
+	sig = BPF.ar(sig, 1000, 3.0);
+
+	sig = sig * amp;
+	Out.ar(0, sig);
+}).add;
+
+SynthDef.new(\dabakan, {
+	arg index, amp;
+
+	var sig = Select.ar(index, [
+		PlayBuf.ar(1, b.dabakan[0], doneAction: 2),
+		PlayBuf.ar(1, b.dabakan[1], doneAction: 2),
+		PlayBuf.ar(1, b.dabakan[2], doneAction: 2),
+		PlayBuf.ar(1, b.dabakan[3], doneAction: 2),
+	]);
+
+	sig = sig * amp;
+	Out.ar(1, sig);
+}).add;
+
+SynthDef.new(\babandir, {
+	arg index, amp;
+
+	var sig = Select.ar(index, [
+		PlayBuf.ar(1, b.babandir[0], doneAction: 2),
+		PlayBuf.ar(1, b.babandir[1], doneAction: 2),
+		PlayBuf.ar(1, b.babandir[2], doneAction: 2),
+		PlayBuf.ar(1, b.babandir[3], doneAction: 2),
+	]);
+
+	sig = sig * amp;
+	Out.ar(1, sig);
+}).add;
 )
 
-VKey(\kulintangTest).loadAsSeries(s, f, channels: 0);
-t = VKey.db('kulintangTest');
-t.vkey(9, 0, nil, 0.7);
-
-// Get reference to database
-k = VKey.db('kulintang');
-d = VKey.db('dabakan');
-b = VKey.db('babandir');
-
-// Play random note
-k.vkey(7, 0, nil, 0.7);
-d.vkey(4.rand, 0, nil, 0.7);
-b.vkey(4.rand, 0, nil, 0.7);
 
 // Setup callback to listen to OscMessages from musx
 (
-  o = OSCFunc({|msg, time, from, port|
-	k.vkey(msg.at(1)-1, 0, nil, msg.at(4), 0);
-  }, '/musx/kulintang', nil, NetAddr.langPort);
+~prevGongIndex = -1;
+~prevSynth = nil;
+OSCdef.new(
+	key: \kulintang,
+	func: {
+		|msg, time, from, port|
+		var amp = msg[4] * exprand(0.2, 0.3);
+		var gongIndex = msg[1] - 1;
+		if (~prevGongIndex == gongIndex, {
+			~prevSynth.free;
+		});
+		~prevSynth = Synth.new(\kulintang, [
+			\gongIndex: gongIndex,
+			\amp: amp,
+		]);
+		~prevGongIndex = gongIndex;
+	},
+	path: '/musx/kulintang',
+	srcID: nil,
+	recvPort: NetAddr.langPort
 );
 
-(
-  r = OSCFunc({|msg, time, from, port|
-	postln(msg.asString);
-	t.vkey(msg.at(1), 0, nil, msg.at(4), 0);
-  }, '/musx/kulintangTuned', nil, NetAddr.langPort);
+OSCdef.new(
+	key: \dabakan,
+	func: {
+		|msg, time, from, port|
+		var amp = msg[4] * exprand(0.2, 0.3);
+		var index = msg[1] - 1;
+		Synth.new(\dabakan, [
+			\index: index,
+			\amp: amp,
+		]);
+	},
+	path: '/musx/dabakan',
+	srcID: nil,
+	recvPort: NetAddr.langPort
 );
 
-(
-  p = OSCFunc({|msg, time, from, port|
-	d.vkey(msg.at(1)-1, 0, nil, msg.at(4), -0.75);
-  }, '/musx/dabakan', nil, NetAddr.langPort);
+~prevBabandirIndex = -1;
+~prevBabandirSynth = nil;
+OSCdef.new(
+	key: \babandir,
+	func: {
+		|msg, time, from, port|
+		var amp = msg[4] * exprand(0.2, 0.3);
+		var index = msg[1] - 1;
+		if (~prevBabandirIndex == index, {
+			~prevBabandirSynth.free;
+		});
+		~prevBabandirSynth = Synth.new(\babandir, [
+			\index: index,
+			\amp: amp,
+		]);
+		~prevBabandirIndex = index;
+	},
+	path: '/musx/babandir',
+	srcID: nil,
+	recvPort: NetAddr.langPort
 );
-
-(
-  q = OSCFunc({|msg, time, from, port|
-	b.vkey((msg.at(1)-1) % 4, 0, nil, msg.at(4), 0.75);
-  }, '/musx/babandir', nil, NetAddr.langPort);
-);
+)
 
 // Show scope
 s.scope;
