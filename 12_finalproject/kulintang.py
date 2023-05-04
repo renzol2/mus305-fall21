@@ -123,28 +123,31 @@ if __name__ == "__main__":
     # Basic parameters
     dur = 0.5
     amps = 0.5, 0.9  # non-accent, accent
-    tempo = 75
+    tempo = 70
     use_alternate_tuning = False
     alternate_tuning = UNIVERSITY_PHILIPPINES_TUNING
     # print(alternate_tuning)
 
     # Compositional parameters
     use_markov = True
-    kulintang_part = DUYUG_CR_12  # overwritten if use_markov=True
+    kulintang_part = SCALE # overwritten if use_markov=True
 
     # Markov chain parameters
-    markov_data = (
-        DUYUG_CR_1_BODY + DUYUG_CR_12_BODY + DUYUG_CR_13_BODY + BINALIG_CR_23_BODY
-    )
-    markov_data = DUYUG_CR_1_BODY + DUYUG_CR_12_BODY + DUYUG_CR_13_BODY
-    markov_order = 4  # duyug: ~3-10, binalig: ~12
-    opening_pattern = DUYUG_CR_1_OPENING
-    closing_pattern = DUYUG_CR_1_CLOSING
-    num_notes = 200
+    # markov_data = SCALE
+    markov_data = BINALIG_CR_23_BODY
+    # markov_data = (
+    #     DUYUG_CR_1_BODY + DUYUG_CR_12_BODY + DUYUG_CR_13_BODY
+    # )
+    markov_order = 12  # duyug: ~3-10, binalig: ~12
+    # opening_pattern = DUYUG_CR_1_OPENING
+    # closing_pattern = DUYUG_CR_12_CLOSING
+    opening_pattern = BINALIG_CR_23_OPENING
+    closing_pattern = BINALIG_CR_23_CLOSING
+    num_notes = 2700
 
     # Other instrument parameters
-    play_dabakan = True
-    play_babandir = True
+    play_dabakan = False 
+    play_babandir = False 
     dabakan_pattern = DUYUG_DABAKAN_SAMPLE_PATTERN
     babandir_pattern = DUYUG_BABANDIR_SAMPLE_PATTERN_1
 
@@ -154,7 +157,7 @@ if __name__ == "__main__":
             markov_data, order=markov_order, length=num_notes
         )
         kulintang_part = opening_pattern + markov_kulintang_body + closing_pattern
-    # pretty_print_kulintang_piece(markov_kulintang_piece)
+    pretty_print_kulintang_piece(kulintang_part)
 
     # Get dabakan score
     total_beats = get_composition_length(kulintang_part)
